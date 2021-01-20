@@ -12,22 +12,23 @@ app.set("view engine", "ejs");
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
-app.set("secret', 'options");
-
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+//generate 6 alphanumerical string to use for URL shortening
 function generateRandomString() {
   let r = Math.random().toString(36).substring(6);
   return r;
 }
 
+// route handler
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
+
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -73,6 +74,9 @@ app.get("/urls/:shortURL", (req, res) => {
   };
   res.render("urls_show", templateVars);
 });
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
