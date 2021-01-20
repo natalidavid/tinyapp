@@ -95,7 +95,6 @@ app.get("/register", (req, res) => {
     username: req.cookies["username"]
   };
   res.render("register_page", templateVars);
-
 });
 
 // GET route handler
@@ -121,9 +120,8 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // Displays 404 message
 app.get("*", (req, res) => {
-  res.send("404 error: Page not found");
+  res.sendStatus(404);
 });
-
 
 // Displays the message when server is up
 app.listen(PORT, () => {
