@@ -24,8 +24,12 @@ function generateRandomString() {
 }
 
 // route handler
+// add cookies to  all templateVars since header shows up on all these pages
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
   res.render("urls_index", templateVars);
 });
 
@@ -35,8 +39,13 @@ app.get("/urls.json", (req, res) => {
 });
 
 // present form to the user
+// templateVars that were missing before!
+// Style objects on new lines: advice by mentor Kat
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = {
+    username: req.cookies["username"]
+  }
+  res.render("urls_new", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -87,7 +96,8 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies["username"]
   };
   res.render("urls_show", templateVars);
 });
