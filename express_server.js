@@ -69,7 +69,9 @@ app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);
   // sets "username" value to the value we submit in the login form (in the _header)!
   res.redirect("/urls");
-})
+  //redirect to our main page
+});
+
 // GET route handler
 // This will take us to the full webiste page we're creating URL shortening for
 app.get("/u/:shortURL", (req, res) => {
