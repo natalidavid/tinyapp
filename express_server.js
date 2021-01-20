@@ -10,6 +10,7 @@ app.set("view engine", "ejs");
 
 // cookie parser setup
 const cookieParser = require("cookie-parser");
+const { restart } = require("nodemon");
 app.use(cookieParser());
 
 const urlDatabase = {
@@ -80,6 +81,14 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
   //redirect to our main page
 });
+
+// POST handle for our logout action
+app.post("/logout", (req, res) => {
+  res.clearCookie("username", req.body.username);
+  //clears the cookie, thus logging user out
+  res.redirect("/urls");
+});
+
 
 // GET route handler
 // This will take us to the full webiste page we're creating URL shortening for
