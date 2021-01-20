@@ -55,18 +55,33 @@ app.post("/urls/:id", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+//POST request for deleting our entries
+//Use wisely / reset the server afterwards
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
+  //redir back to the main page with My URLs
   res.redirect("/urls");
 });
 
+// POST handle for our login
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  // sets "username" value to the value we submit in the login form (in the _header)!
+  res.redirect("/urls");
+})
+// GET route handler
+// This will take us to the full webiste page we're creating URL shortening for
 app.get("/u/:shortURL", (req, res) => {
   //console.log(req.params);
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
+  //redirects to original URL, eg lighthouselabs.ca
 });
 
+// GET request to the urls_show.ejs
+// Page displays template with full web address, short web address
+// Update: updates the long address only
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
@@ -75,9 +90,12 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// Displays 404 message
+app.get("*", (req, res) => {
+  res.send("404 error: Page not found");
+});
 
-
-
+// Displays the message when server is up
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
