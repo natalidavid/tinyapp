@@ -88,6 +88,10 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+app.get("/register", (req, res) {
+
+});
+
 // GET route handler
 // This will take us to the full webiste page we're creating URL shortening for
 app.get("/u/:shortURL", (req, res) => {
