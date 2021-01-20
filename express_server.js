@@ -24,7 +24,7 @@ const generateRandomString = function() {
 };
 
 // route handler
-// add cookies to  all templateVars since header shows up on all these pages
+// add cookies to all templateVars since header shows up on all these pages
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
