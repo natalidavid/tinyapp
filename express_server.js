@@ -14,7 +14,7 @@ const urlDatabase = {
 };
 
 function generateRandomString() {
-  let r = Math.random(9).toString(36).substring(6);
+  let r = Math.random().toString(36).substring(6);
   return r;
 }
 
@@ -40,11 +40,23 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls/");
 });
 
+// Edit buttons action
+// Updates URL resource
+app.post("/urls/:id", (req, res) => {
+  const shortURL = req.params.id;
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect(`/urls/${shortURL}`)
+});
+
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
   res.redirect("/urls")
 })
+
+
+/* GET */
+
 
 app.get("/u/:shortURL", (req, res) => {
   //console.log(req.params);
@@ -53,7 +65,10 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const templateVars = { 
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
+  };
   res.render("urls_show", templateVars);
 });
 
