@@ -90,7 +90,7 @@ app.post("/logout", (req, res) => {
 
 
 // GET endpoint, returns register_page template
-app.get("/register", (req, res) {
+app.get("/register", (req, res) => {
   const templateVars = {
     username: req.cookies["username"]
   };
