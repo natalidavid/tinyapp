@@ -10,7 +10,6 @@ app.set("view engine", "ejs");
 
 // cookie parser setup
 const cookieParser = require("cookie-parser");
-const { restart } = require("nodemon");
 app.use(cookieParser());
 
 const urlDatabase = {
@@ -19,10 +18,10 @@ const urlDatabase = {
 };
 
 //generate 6 alphanumerical string to use for URL shortening
-function generateRandomString() {
+const generateRandomString = function() {
   let r = Math.random().toString(36).substring(6);
   return r;
-}
+};
 
 // route handler
 // add cookies to  all templateVars since header shows up on all these pages
@@ -45,7 +44,7 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const templateVars = {
     username: req.cookies["username"]
-  }
+  };
   res.render("urls_new", templateVars);
 });
 
@@ -89,7 +88,6 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-
 // GET route handler
 // This will take us to the full webiste page we're creating URL shortening for
 app.get("/u/:shortURL", (req, res) => {
@@ -115,6 +113,7 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("*", (req, res) => {
   res.send("404 error: Page not found");
 });
+
 
 // Displays the message when server is up
 app.listen(PORT, () => {
