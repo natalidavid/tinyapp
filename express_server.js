@@ -88,7 +88,13 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+
+// GET endpoint, returns register_page template
 app.get("/register", (req, res) {
+  const templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("register_page", templateVars);
 
 });
 
