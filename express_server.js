@@ -30,8 +30,9 @@ const generateRandomString = function () {
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user: users[req.cookies.user_id]
   };
+  console.log("req.cookies", req.cookies.user_id);
   res.render("urls_index", templateVars);
 });
 
@@ -45,7 +46,7 @@ app.get("/urls.json", (req, res) => {
 // Style objects on new lines: advice by mentor Kat
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"]
+    user: users[req.cookies.user_id]
   };
   res.render("urls_new", templateVars);
 });
@@ -77,7 +78,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // POST handle for our login
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+  console.log(req.body, "This is req body");
+  res.cookie("user_id", users.user.id);
   // sets "username" value to the value we submit in the login form (in the _header)!
   res.redirect("/urls");
   //redirect to our main page
@@ -85,7 +87,7 @@ app.post("/login", (req, res) => {
 
 // POST handle for our logout action
 app.post("/logout", (req, res) => {
-  res.clearCookie("username", req.body.username);
+  res.clearCookie("user_id");
   //clears the cookie, thus logging user out
   res.redirect("/urls");
 });
@@ -102,14 +104,16 @@ app.post("/register", (req, res) => {
     password
   }
   users[id] = user;
-  res.cookie("user_id", id);
+  console.log('users', users);
+  res.cookie("user_id", user.id);
+
   res.redirect("/urls");
 });
 
 // GET endpoint, returns register_page template
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: req.cookies["username"]
+    user: users[req.cookies.user_id]
   };
   res.render("register_page", templateVars);
 });
@@ -130,7 +134,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies["username"]
+    user: users[req.cookies.user_id]
   };
   res.render("urls_show", templateVars);
 });

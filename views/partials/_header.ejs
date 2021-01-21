@@ -13,8 +13,8 @@
     
     <!-- The Login Form that POSTs to /login and /logout -->
 
-    <% if(username){ %>
-      <p class="inline" style="padding-right: 1em">Hi <%= username %>!</p>
+    <% if(user){ %>
+      <p class="inline" style="padding-right: 1em">Hi <%= user.email %>!</p>
       <form class="form-inline" action="/logout" method="POST" style="padding-right: 3em;">
         <button type="submit" class="btn btn-light">Logout</button>
     </form>
