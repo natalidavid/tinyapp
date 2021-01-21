@@ -46,6 +46,7 @@ const getUserByEmail = function (email, users) {
   }
 };
 
+//check if the password matches the user/email
 const getPasswordCheck = function (email, password, users) {
   for (let user in users) {
     if (users[user].email === email && users[user].password === password) {
@@ -109,8 +110,10 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const mailCheck = getUserByEmail(email, users);
-  const passCheck = getPasswordCheck(email, password, users)
+  const passCheck = getPasswordCheck(email, password, users);
 
+  // evaluate: if email exists upon login
+  // check if the password matches
   if(passCheck && mailCheck) {
     res.cookie("user_id", mailCheck)
   } else {
@@ -120,9 +123,15 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
+// POST handle for our logout action
+app.post("/logout", (req, res) => {
+  res.clearCookie("username", req.body.username);
+  //clears the cookie, thus logging user out
+  res.redirect("/urls");
+});
+
 
 app.post("/register", (req, res) => {
-
   const email = req.body.email;
   const password = req.body.password;
 
