@@ -115,7 +115,7 @@ app.post("/register", (req, res) => {
   }
   for (let userId in users) {
     console.log(users[userId].email);
-    if (users[userId].email === email) {
+    if (users[userId]['email'] === email) {
       res.sendStatus(400);
       return;
     }
