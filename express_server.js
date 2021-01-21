@@ -2,6 +2,10 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 
+// morgan middleware
+const morgan = require('morgan');
+app.use(morgan('dev'));
+
 // body parser setup
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -13,8 +17,8 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
 const users = {
@@ -31,13 +35,13 @@ const users = {
 };
 
 //generate 6 alphanumerical string to use for URL shortening
-const generateRandomString = function() {
+const generateRandomString = function () {
   let r = Math.random().toString(36).substring(6);
   return r;
 };
 
 //function that checks if emails were already in use
-const getUserByEmail = function(email, users) {
+const getUserByEmail = function (email, users) {
   for (let user in users) {
     if (users[user].email === email) {
       return users[user].id;
@@ -47,7 +51,7 @@ const getUserByEmail = function(email, users) {
 };
 
 //check if the password matches the user/email
-const getPasswordCheck = function(email, password, users) {
+const getPasswordCheck = function (email, password, users) {
   for (let user in users) {
     if (users[user].email === email && users[user].password === password) {
       return true;
@@ -66,18 +70,25 @@ app.get("/urls", (req, res) => {
 });
 
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
+// app.get("/urls.json", (req, res) => {
+//   res.json(urlDatabase);
+// });
+
 
 // present form to the user
 // templateVars that were missing before!
 // Style objects on new lines: advice by mentor Kat
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies.user_id]
-  };
-  res.render("urls_new", templateVars);
+
+  if (users[req.cookies.user_id]) {
+    const templateVars = {
+      urls: urlDatabase,
+      user: users[req.cookies.user_id]
+    };
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login")
+  }
 });
 
 app.post("/urls", (req, res) => {
@@ -151,7 +162,7 @@ app.post("/register", (req, res) => {
     };
     users[id] = user;
     res.cookie("user_id", user.id);
-  
+
     res.redirect("/urls");
   }
 });
@@ -183,18 +194,17 @@ app.get("/u/:shortURL", (req, res) => {
 // GET request to the urls_show.ejs
 // Page displays template with full web address, short web address
 // Update: updates the long address only
-app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
-    user: users[req.cookies.user_id]
-  };
-  res.render("urls_show", templateVars);
+app.post("/urls/:shortURL/delete", (req, res) => {
+  const shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
+  //redir back to the main page with My URLs
+  res.redirect("/urls");
 });
 
 // Displays 404 message
 app.get("*", (req, res) => {
   res.sendStatus(404);
+  res.redirect("/urls")
 });
 
 // Displays the message when server is up
