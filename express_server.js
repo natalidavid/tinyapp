@@ -46,13 +46,13 @@ const getUserByEmail = function (email, users) {
   }
 };
 
-// const usedPassword = function (email, password, userId) {
-//   for (let value in userId) {
-//     if (userId[value]["email"] === email && userId[value]["password"] === password) {
-//       return true;
-//     }
-//   }
-// };
+const getPasswordCheck = function (email, password, users) {
+  for (let user in users) {
+    if (users[user].email === email && users[user].password === password) {
+      return true;
+    }
+  }
+};
 
 // route handler
 // add cookies to all templateVars since header shows up on all these pages
@@ -108,12 +108,15 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const mailCheck = getUserByEmail(email, users);
+  const passCheck = getPasswordCheck(email, password, users)
 
+  if(passCheck && mailCheck) {
+    res.cookie("user_id", mailCheck)
+  } else {
+    res.sendStatus(403);
+  };
 
-// POST handle for our logout action
-app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
-  //clears the cookie, thus logging user out
   res.redirect("/urls");
 });
 
