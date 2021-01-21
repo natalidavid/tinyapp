@@ -36,6 +36,17 @@ const generateRandomString = function () {
   return r;
 };
 
+//function that checks if emails were already in use
+const usedEmail = function (email) {
+
+  for (const userEmail in users) {
+    if (users.userEmail["email"] === email) {
+      return true;
+    }
+  }
+};
+
+
 // route handler
 // add cookies to all templateVars since header shows up on all these pages
 app.get("/urls", (req, res) => {
@@ -109,17 +120,14 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  if (email === "" || password === "") {
+  // check for empty fields and duplicate emails
+  if (!email || !password) {
     res.sendStatus(400);
-    return;
   }
-  for (let userId in users) {
-    console.log(users[userId].email);
-    if (users[userId]['email'] === email) {
-      res.sendStatus(400);
-      return;
-    }
+  if (usedEmail(email)) {
+    res.sendStatus(400);
   }
+
   // create user object
   const user = {
     id,
