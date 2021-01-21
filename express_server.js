@@ -17,7 +17,18 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const users = {};
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
 
 //generate 6 alphanumerical string to use for URL shortening
 const generateRandomString = function () {
@@ -32,7 +43,6 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     user: users[req.cookies.user_id]
   };
-  console.log("req.cookies", req.cookies.user_id);
   res.render("urls_index", templateVars);
 });
 
@@ -52,7 +62,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
+  //console.log(req.body); // Log the POST request body to the console
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
@@ -79,7 +89,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 // POST handle for our login
 app.post("/login", (req, res) => {
   console.log(req.body, "This is req body");
-  res.cookie("user_id", users.user.id);
+  res.cookie("user_id", users[req.cookies.user_id]);
   // sets "username" value to the value we submit in the login form (in the _header)!
   res.redirect("/urls");
   //redirect to our main page
@@ -92,11 +102,24 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+
 app.post("/register", (req, res) => {
+
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
 
+  if (email === "" || password === "") {
+    res.sendStatus(400);
+    return;
+  }
+  for (let userId in users) {
+    console.log(users[userId].email);
+    if (users[userId].email === email) {
+      res.sendStatus(400);
+      return;
+    }
+  }
   // create user object
   const user = {
     id,
@@ -104,10 +127,11 @@ app.post("/register", (req, res) => {
     password
   }
   users[id] = user;
-  console.log('users', users);
   res.cookie("user_id", user.id);
 
   res.redirect("/urls");
+  //console.log("req.cookies", req.cookies.user_id);
+
 });
 
 // GET endpoint, returns register_page template
