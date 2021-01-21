@@ -38,14 +38,12 @@ const generateRandomString = function () {
 
 //function that checks if emails were already in use
 const usedEmail = function (email) {
-
   for (const userEmail in users) {
     if (users.userEmail["email"] === email) {
       return true;
     }
   }
 };
-
 
 // route handler
 // add cookies to all templateVars since header shows up on all these pages
@@ -149,6 +147,12 @@ app.get("/register", (req, res) => {
   };
   res.render("register_page", templateVars);
 });
+
+app.get("/login", (req, res) => {
+  const templateVars = {
+  };
+  res.render("login_page", templateVars);
+})
 
 // GET route handler
 // This will take us to the full webiste page we're creating URL shortening for
