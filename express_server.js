@@ -17,9 +17,20 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW" 
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW" }
 };
+
+// Old urlDatabase object:
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
 
 const users = {
   "userRandomID": {
@@ -186,7 +197,7 @@ app.get("/login", (req, res) => {
 // This will take us to the full webiste page we're creating URL shortening for
 app.get("/u/:shortURL", (req, res) => {
   //console.log(req.params);
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
   //redirects to original URL, eg lighthouselabs.ca
 });
