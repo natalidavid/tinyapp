@@ -125,7 +125,8 @@ app.post("/login", (req, res) => {
 
 // POST handle for our logout action
 app.post("/logout", (req, res) => {
-  res.clearCookie("username", req.body.username);
+  res.clearCookie("user_id", req.body.user);
+  //console.log("user_id", req.body.user_id);
   //clears the cookie, thus logging user out
   res.redirect("/urls");
 });
