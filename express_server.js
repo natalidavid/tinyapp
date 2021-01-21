@@ -28,26 +28,26 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
-}
+};
 
 //generate 6 alphanumerical string to use for URL shortening
-const generateRandomString = function () {
+const generateRandomString = function() {
   let r = Math.random().toString(36).substring(6);
   return r;
 };
 
 //function that checks if emails were already in use
-const getUserByEmail = function (email, users) {
+const getUserByEmail = function(email, users) {
   for (let user in users) {
     if (users[user].email === email) {
-      return users[user].id
+      return users[user].id;
       //returns entire object instread of true value (as per mentor Gary)
     }
   }
 };
 
 //check if the password matches the user/email
-const getPasswordCheck = function (email, password, users) {
+const getPasswordCheck = function(email, password, users) {
   for (let user in users) {
     if (users[user].email === email && users[user].password === password) {
       return true;
@@ -114,11 +114,11 @@ app.post("/login", (req, res) => {
 
   // evaluate: if email exists upon login
   // check if the password matches
-  if(passCheck && mailCheck) {
-    res.cookie("user_id", mailCheck)
+  if (passCheck && mailCheck) {
+    res.cookie("user_id", mailCheck);
   } else {
     res.sendStatus(403);
-  };
+  }
 
   res.redirect("/urls");
 });
@@ -130,7 +130,6 @@ app.post("/logout", (req, res) => {
   //clears the cookie, thus logging user out
   res.redirect("/urls");
 });
-
 
 app.post("/register", (req, res) => {
   const email = req.body.email;
@@ -149,14 +148,12 @@ app.post("/register", (req, res) => {
       id,
       email,
       password
-    }
+    };
     users[id] = user;
     res.cookie("user_id", user.id);
   
     res.redirect("/urls");
   }
-
-
 });
 
 // GET endpoint, returns register_page template
@@ -172,7 +169,7 @@ app.get("/login", (req, res) => {
     user: users[req.cookies.user_id]
   };
   res.render("login_page", templateVars);
-})
+});
 
 // GET route handler
 // This will take us to the full webiste page we're creating URL shortening for
