@@ -38,12 +38,20 @@ const generateRandomString = function () {
 
 //function that checks if emails were already in use
 const usedEmail = function (email) {
-  for (const userEmail in users) {
-    if (users.userEmail["email"] === email) {
+  for (let userEmail in users) {
+    if (users[userEmail]["email"] === email) {
       return true;
     }
   }
 };
+
+const usedPassword = function(email, password, userId) {
+ for (let value in userId) {
+   if (userId[value]["email"] === email && userId[value]["password"] === password) {
+     return true;
+   }
+ }
+}
 
 // route handler
 // add cookies to all templateVars since header shows up on all these pages
@@ -97,7 +105,15 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // POST handle for our login
 app.post("/login", (req, res) => {
-  console.log(req.body, "This is req body");
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (!usedEmail(email)) {
+    res.sendStatus(403);
+  } else if (usedEmail(email)) {
+    if (password)
+    res.sendStatus(403);
+  }
   res.cookie("user_id", users[req.cookies.user_id]);
   // sets "username" value to the value we submit in the login form (in the _header)!
   res.redirect("/urls");
@@ -150,6 +166,7 @@ app.get("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
   const templateVars = {
+    user: users[req.cookies.user_id]
   };
   res.render("login_page", templateVars);
 })
