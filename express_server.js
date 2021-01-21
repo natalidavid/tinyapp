@@ -17,8 +17,10 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {};
+
 //generate 6 alphanumerical string to use for URL shortening
-const generateRandomString = function() {
+const generateRandomString = function () {
   let r = Math.random().toString(36).substring(6);
   return r;
 };
@@ -88,6 +90,16 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+app.post("/register", (req, res) => {
+  const userRandomID = generateRandomString();
+  users[userRandomID] = {
+    id: userRandomID,
+    email: req.body.email,
+    password: req.body.password
+  }
+  console.log(users[userRandomID]);
+  res.redirect("/urls");
+});
 
 // GET endpoint, returns register_page template
 app.get("/register", (req, res) => {
