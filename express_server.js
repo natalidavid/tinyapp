@@ -91,20 +91,25 @@ app.post("/logout", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  const userRandomID = generateRandomString();
-  users[userRandomID] = {
-    id: userRandomID,
-    email: req.body.email,
-    password: req.body.password
+  const id = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+
+  // create user object
+  const user = {
+    id,
+    email,
+    password
   }
-  console.log(users[userRandomID]);
+  users[id] = user;
+  res.cookie("user_id", id);
   res.redirect("/urls");
 });
 
 // GET endpoint, returns register_page template
 app.get("/register", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"]
+    user: req.cookies["username"]
   };
   res.render("register_page", templateVars);
 });
