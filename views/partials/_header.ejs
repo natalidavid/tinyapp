@@ -16,7 +16,7 @@
     <% if(user){ %>
       
       <form class="form-inline" action="/logout" method="POST" style="padding-right: 1em">
-        <p class="inline" style="padding-right: 1em">Hi <%= user.email %>!</p>
+        <p class="inline" style="padding-right: 1em">Logged in as: <%= user.email %>!</p>
         <button type="submit" class="btn btn-light">Logout</button>
       </form>
     <% } else{ %>  

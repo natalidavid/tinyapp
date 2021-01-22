@@ -14,7 +14,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // cookie parser setup
 const cookieParser = require("cookie-parser");
-const e = require("express");
 app.use(cookieParser());
 
 const urlDatabase = {
@@ -48,13 +47,13 @@ const users = {
 };
 
 //generate 6 alphanumerical string to use for URL shortening
-const generateRandomString = function () {
+const generateRandomString = function() {
   let r = Math.random().toString(36).substring(6);
   return r;
 };
 
 //function that checks if emails were already in use
-const getUserByEmail = function (email, users) {
+const getUserByEmail = function(email, users) {
   for (let user in users) {
     if (users[user].email === email) {
       return users[user].id;
@@ -64,7 +63,7 @@ const getUserByEmail = function (email, users) {
 };
 
 //check if the password matches the user/email
-const getPasswordCheck = function (email, password, users) {
+const getPasswordCheck = function(email, password, users) {
   for (let user in users) {
     if (users[user].email === email && users[user].password === password) {
       return true;
@@ -73,47 +72,43 @@ const getPasswordCheck = function (email, password, users) {
 };
 
 // returns URLs where the userID === id of the currently logged in user
-const urlsForUser = function (id) {
+const urlsForUser = function(id) {
   let urls = {};
-  for (let users in urlDatabase) {
-    if (id === urlDatabase[users].userID) {
-      urls[users] = urlDatabase[users];
+  for (let shortURL in urlDatabase) {
+    console.log('urls', urlDatabase[shortURL]);
+    if (id === urlDatabase[shortURL].userID) {
+      urls[shortURL] = urlDatabase[shortURL];
     }
   }
   return urls;
-}
+  // sending back urls if the id matches
+};
 
 // main index page of URLs
 // add cookies to all templateVars since header shows up on all these pages
 app.get("/urls", (req, res) => {
 // needs to be urls unique for the user
   const templateVars = {
-    urls: urlDatabase, 
-    user: users[req.cookies.user_id]
-  }
+    urls: urlsForUser(req.cookies.user_id),
+    user: req.cookies.user_id
+  };
   res.render("urls_index", templateVars);
 
 });
-
-// const templateVars = {
-//   urlDatabase: urlsForUser(req.cookies.user_id),
-//   user: req.cookies.user_id
-// }
-// res.render("urls_index", templateVars);
 
 // present form to the user
 // templateVars that were missing before!
 // Style objects on new lines: advice by mentor Kat
 app.get("/urls/new", (req, res) => {
 
-  if (users[req.cookies.user_id]) {
+  if (req.cookies.user_id) {
     const templateVars = {
       urls: urlDatabase,
-      user: users[req.cookies.user_id]
+      user: req.cookies.user_id
     };
     res.render("urls_new", templateVars);
   } else {
-    res.redirect("/login")
+    res.redirect("/login");
   }
 });
 
@@ -122,17 +117,17 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = {
-    longURL,
-    user: users[req.cookies.user_id]
+    longURL: longURL,
+    userID: req.cookies.user_id
   };
-  res.redirect(`/urls/${shortURL}`);
+  res.redirect(`/urls`);
 });
 
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
-  res.redirect(`/urls/${longURL}`)
+  res.redirect(`/urls/${longURL}`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -149,7 +144,7 @@ app.get("/urls/:shortURL", (req, res) => {
     };
     res.render("urls_show", templateVars);
   } else {
-    res.redirect("/login")
+    res.redirect("/login");
   }
 });
 
@@ -164,16 +159,15 @@ app.post("/login", (req, res) => {
   // check if the password matches
   if (passCheck && mailCheck) {
     res.cookie("user_id", mailCheck);
+    res.redirect("/urls");
   } else {
     res.sendStatus(403);
   }
-
-  res.redirect("/urls");
 });
 
 // POST handle for our logout action
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id", req.body.user);
+  res.clearCookie("user_id");
   //console.log("user_id", req.body.user_id);
   //clears the cookie, thus logging user out
   res.redirect("/urls");
@@ -207,14 +201,14 @@ app.post("/register", (req, res) => {
 // GET endpoint, returns register_page template
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: users[req.cookies.user_id]
+    user: req.cookies.user_id
   };
   res.render("register_page", templateVars);
 });
 
 app.get("/login", (req, res) => {
   const templateVars = {
-    user: users[req.cookies.user_id]
+    user: req.cookies.user_id
   };
   res.render("login_page", templateVars);
 });
@@ -233,10 +227,10 @@ app.get("/u/:shortURL", (req, res) => {
 // Update: updates the long address only
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  if (users[req.cookies.user_id]) {
+  if (req.cookies.user_id) {
     delete urlDatabase[shortURL];
   } else {
-    res.status(400).send("Action not allowed!")
+    res.status(400).send("Action not allowed!");
   }
   //redir back to the main page with My URLs
   res.redirect("/urls");
@@ -245,7 +239,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 // Displays 404 message
 app.get("*", (req, res) => {
   res.sendStatus(404);
-  res.redirect("/urls")
+  res.redirect("/urls");
 });
 
 // Displays the message when server is up
