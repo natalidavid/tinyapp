@@ -1,5 +1,29 @@
 //functions to use inside the express_server.js
 
+const urlDatabase = {
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW"
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW"
+  }
+};
+
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+};
+
 
 //generate 6 alphanumerical string to use for URL shortening
 const generateRandomString = function() {
@@ -39,4 +63,5 @@ const urlsForUser = function(id) {
   // sending back urls if the id matches
 };
 
-module.exports = { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser};
+
+module.exports = { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser, urlDatabase, users};

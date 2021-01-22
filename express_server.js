@@ -1,10 +1,8 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-
+const { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser, urlDatabase} = require("./helper")
 app.set("view engine", "ejs");
-
-const { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser} = require("./helper.js");
 
 // morgan middleware
 const morgan = require('morgan');
@@ -19,26 +17,7 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 // password hashing magic
-const bcrypt = require("bcryptjs");
-const password = "purple-monkey-dinosaur"; // found in the req.params object
-const hashedPassword = bcrypt.hashSync(password, 10);
-
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW"
-  },
-  i3BoGr: {
-    longURL: "https://www.google.ca",
-    userID: "aJ48lW"
-  }
-};
-
-// Old urlDatabase object:
-// const urlDatabase = {
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com"
-// };
+const bcrypt = require("bcrypt");
 
 const users = {
   "userRandomID": {
@@ -82,7 +61,6 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  //console.log(req.body); // Log the POST request body to the console
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = {
@@ -101,9 +79,6 @@ app.post("/urls/:shortURL", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  // console.log("req.params.id", req.params.shortURL);
-  // console.log("req.params", req.params);
-  // console.log("urlDatabase[shortURL]", urlDatabase[shortURL]);
   const longURL = urlDatabase[shortURL]['longURL'];
   if (users[req.cookies.user_id]) {
     let templateVars = {
@@ -137,7 +112,6 @@ app.post("/login", (req, res) => {
 // POST handle for our logout action
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
-  //console.log("user_id", req.body.user_id);
   //clears the cookie, thus logging user out
   res.redirect("/urls");
 });
@@ -185,7 +159,6 @@ app.get("/login", (req, res) => {
 // GET route handler
 // This will take us to the full webiste page we're creating URL shortening for
 app.get("/u/:shortURL", (req, res) => {
-  //console.log(req.params);
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
   //redirects to original URL, eg lighthouselabs.ca
