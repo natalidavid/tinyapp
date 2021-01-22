@@ -1,4 +1,5 @@
 //functions to use inside the express_server.js
+const bcrypt = require("bcryptjs");
 
 const urlDatabase = {
   b6UTxQ: {
@@ -15,12 +16,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    hashedPassword: "purple-monkey-dinosaur"
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    hashedPassword: "dishwasher-funk"
   }
 };
 
@@ -44,10 +45,11 @@ const getUserByEmail = function(email, users) {
 //check if the password matches the user/email
 const getPasswordCheck = function(email, password, users) {
   for (let user in users) {
-    if (users[user].email === email && users[user].password === password) {
+    if (users[user].email === email && bcrypt.compareSync(users[user].hashedPassword, password)) {
       return true;
     }
   }
+  return false;
 };
 
 // returns URLs where the userID === id of the currently logged in user
@@ -63,4 +65,4 @@ const urlsForUser = function(id) {
 };
 
 
-module.exports = { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser, urlDatabase, users};
+module.exports = { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser, urlDatabase, users };

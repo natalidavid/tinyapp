@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-const { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser, urlDatabase, users} = require("./helper")
+const { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser, urlDatabase, users } = require("./helper")
 app.set("view engine", "ejs");
 
 // morgan middleware
@@ -17,7 +17,10 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 // password hashing magic
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
+
+
+
 
 // main index page of URLs
 // add cookies to all templateVars since header shows up on all these pages
@@ -61,10 +64,10 @@ app.post("/urls", (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  console.log("shortURL", shortURL);
-  console.log("req", req.body);
+  // console.log("shortURL", shortURL);
+  // console.log("req", req.body);
   urlDatabase[shortURL].longURL = req.body.longURL;
-  console.log("database", urlDatabase);
+  //get longURL value from the object
   res.redirect(`/urls/`);
 });
 
@@ -123,19 +126,23 @@ app.post("/register", (req, res) => {
       error: "Something's wrong!"
     };
     res.status(400).render('404', templateVars);
+
   } else if (getUserByEmail(email, users)) {
     const templateVars = {
       error: "Something's wrong!"
     };
     res.status(400).render('404', templateVars);
+
   } else {
     const id = generateRandomString();
     // create user object
     const user = {
       id,
       email,
-      password
+      password: bcrypt.hashSync(password, 10)
     };
+
+    console.log(user);
     users[id] = user;
     res.cookie("user_id", user.id);
     res.redirect("/urls");
