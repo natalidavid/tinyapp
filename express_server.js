@@ -1,7 +1,9 @@
+const { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser, urlDatabase, users } = require("./helper")
+
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-const { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser, urlDatabase, users } = require("./helper")
+
 app.set("view engine", "ejs");
 
 // morgan middleware
@@ -12,24 +14,25 @@ app.use(morgan('dev'));
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// cookie parser setup
-const cookieParser = require("cookie-parser");
-app.use(cookieParser());
+// cookie session setup
+const cookieSession = require('cookie-session')
+app.use(cookieSession({
+  name: 'cookie',
+  keys: ['key1', 'key2']
+}))
 
 // password hashing magic
 const bcrypt = require("bcryptjs");
-
-
 
 
 // main index page of URLs
 // add cookies to all templateVars since header shows up on all these pages
 app.get("/urls", (req, res) => {
 // needs to be urls unique for the user
-console.log(req.cookies.user_id);
+console.log(req.session.user_id);
   const templateVars = {
-    urls: urlsForUser(req.cookies.user_id),
-    user: users[req.cookies.user_id]
+    urls: urlsForUser(req.session.user_id),
+    user: users[req.session.user_id]
   };
   res.render("urls_index", templateVars);
 
@@ -40,10 +43,10 @@ console.log(req.cookies.user_id);
 // Style objects on new lines: advice by mentor Kat
 app.get("/urls/new", (req, res) => {
 
-  if (req.cookies.user_id) {
+  if (req.session.user_id) {
     const templateVars = {
       urls: urlDatabase,
-      user: req.cookies.user_id
+      user: req.session.user_id
     };
     res.render("urls_new", templateVars);
   } else {
@@ -56,7 +59,7 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = {
     longURL: longURL,
-    userID: req.cookies.user_id
+    userID: req.session.user_id
   };
   res.redirect(`/urls`);
 });
@@ -75,11 +78,11 @@ app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   console.log("urldatabase", urlDatabase[shortURL].longURL);
   const longURL = urlDatabase[shortURL].longURL;
-  if (req.cookies.user_id) {
+  if (req.session.user_id) {
     let templateVars = {
       shortURL: shortURL,
       longURL: longURL,
-      user: users[req.cookies.user_id]
+      user: users[req.session.user_id]
     };
     res.render("urls_show", templateVars);
   } else {
@@ -97,7 +100,8 @@ app.post("/login", (req, res) => {
   // evaluate: if email exists upon login
   // check if the password matches
   if (passCheck && mailCheck) {
-    res.cookie("user_id", mailCheck);
+    // res.cookie("user_id", mailCheck);
+    req.session.user_id = mailCheck;
     res.redirect("/urls");
   } else {
     const templateVars = {
@@ -144,7 +148,8 @@ app.post("/register", (req, res) => {
 
     console.log(user);
     users[id] = user;
-    res.cookie("user_id", user.id);
+    // res.cookie("user_id", user.id);
+    req.session.user_id = user.id;
     res.redirect("/urls");
   }
 });
@@ -152,14 +157,14 @@ app.post("/register", (req, res) => {
 // GET endpoint, returns register_page template
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: req.cookies.user_id
+    user: req.session.user_id
   };
   res.render("register_page", templateVars);
 });
 
 app.get("/login", (req, res) => {
   const templateVars = {
-    user: req.cookies.user_id
+    user: req.session.user_id
   };
   res.render("login_page", templateVars);
 });
@@ -177,7 +182,7 @@ app.get("/u/:shortURL", (req, res) => {
 // Update: updates the long address only
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  if (req.cookies.user_id) {
+  if (req.session.user_id) {
     delete urlDatabase[shortURL];
   } else {
     const templateVars = {
