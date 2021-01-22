@@ -81,21 +81,17 @@ const urlsForUser = function(id) {
     return urls;
 }
 
-// route handler
+// main index page of URLs
 // add cookies to all templateVars since header shows up on all these pages
 app.get("/urls", (req, res) => {
 
-  if (users[req.cookies.user_id]) {
     const templateVars = {
       urls: urlDatabase,
       user: users[req.cookies.user_id]
     }
     res.render("urls_index", templateVars);
-  }
- 
- 
-});
 
+});
 
 // app.get("/urls.json", (req, res) => {
 //   res.json(urlDatabase);
@@ -128,19 +124,18 @@ app.post("/urls", (req, res) => {
 
 // Edit buttons action
 // Updates URL resource
-app.post("/urls/:id", (req, res) => {
+app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.id;
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
-});
+  const longURL = urlDatabase[shortURL];
 
-//POST request for deleting our entries
-//Use wisely / reset the server afterwards
-app.post("/urls/:shortURL/delete", (req, res) => {
-  const shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
-  //redir back to the main page with My URLs
-  res.redirect("/urls");
+  if (users[req.cookies.user_id]) {
+    const templateVars = {
+      shortURL,
+      longURL,
+      user: users[req.cookies.user_id]
+    }
+    res.redirect(`/urls/${shortURL}`);
+  }
 });
 
 // POST handle for our login
