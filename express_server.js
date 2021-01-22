@@ -23,9 +23,10 @@ const bcrypt = require("bcrypt");
 // add cookies to all templateVars since header shows up on all these pages
 app.get("/urls", (req, res) => {
 // needs to be urls unique for the user
+console.log(req.cookies.user_id);
   const templateVars = {
     urls: urlsForUser(req.cookies.user_id),
-    user: req.cookies.user_id
+    user: users[req.cookies.user_id]
   };
   res.render("urls_index", templateVars);
 
@@ -60,17 +61,21 @@ app.post("/urls", (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
-  res.redirect(`/urls/${longURL}`);
+  console.log("shortURL", shortURL);
+  console.log("req", req.body);
+  urlDatabase[shortURL].longURL = req.body.longURL;
+  console.log("database", urlDatabase);
+  res.redirect(`/urls/`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL]['longURL'];
-  if (users[req.cookies.user_id]) {
+  console.log("urldatabase", urlDatabase[shortURL].longURL);
+  const longURL = urlDatabase[shortURL].longURL;
+  if (req.cookies.user_id) {
     let templateVars = {
-      shortURL,
-      longURL,
+      shortURL: shortURL,
+      longURL: longURL,
       user: users[req.cookies.user_id]
     };
     res.render("urls_show", templateVars);
@@ -101,7 +106,6 @@ app.post("/login", (req, res) => {
 
 // POST handle for our logout action
 app.post("/logout", (req, res) => {
-  console.log("reqbodyuser", req.body.user);
   res.clearCookie("user_id");
   //clears the cookie, thus logging user out
   res.redirect("/urls");

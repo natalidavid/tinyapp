@@ -54,7 +54,6 @@ const getPasswordCheck = function(email, password, users) {
 const urlsForUser = function(id) {
   let urls = {};
   for (let shortURL in urlDatabase) {
-    console.log('urls', urlDatabase[shortURL]);
     if (id === urlDatabase[shortURL].userID) {
       urls[shortURL] = urlDatabase[shortURL];
     }
