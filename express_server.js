@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 
+app.set("view engine", "ejs");
+
 // morgan middleware
 const morgan = require('morgan');
 app.use(morgan('dev'));
@@ -9,8 +11,6 @@ app.use(morgan('dev'));
 // body parser setup
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.set("view engine", "ejs");
 
 // cookie parser setup
 const cookieParser = require("cookie-parser");
@@ -70,14 +70,30 @@ const getPasswordCheck = function (email, password, users) {
   }
 };
 
+// returns URLs where the userID === id of the currently logged in user
+const urlsForUser = function(id) {
+    let urls = {};
+    for (let users in urlDatabase) {
+      if ( id === urlDatabase[users].userID) {
+        urls[users] = urlDatabase[users];
+      }
+    }
+    return urls;
+}
+
 // route handler
 // add cookies to all templateVars since header shows up on all these pages
 app.get("/urls", (req, res) => {
-  const templateVars = {
-    urls: urlDatabase,
-    user: users[req.cookies.user_id]
-  };
-  res.render("urls_index", templateVars);
+
+  if (users[req.cookies.user_id]) {
+    const templateVars = {
+      urls: urlDatabase,
+      user: users[req.cookies.user_id]
+    }
+    res.render("urls_index", templateVars);
+  }
+ 
+ 
 });
 
 
