@@ -4,6 +4,8 @@ const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 
+const { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser} = require("./helper.js");
+
 // morgan middleware
 const morgan = require('morgan');
 app.use(morgan('dev'));
@@ -15,6 +17,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // cookie parser setup
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
+
+// password hashing magic
+const bcrypt = require("bcryptjs");
+const password = "purple-monkey-dinosaur"; // found in the req.params object
+const hashedPassword = bcrypt.hashSync(password, 10);
 
 const urlDatabase = {
   b6UTxQ: {
@@ -44,44 +51,6 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
-};
-
-//generate 6 alphanumerical string to use for URL shortening
-const generateRandomString = function() {
-  let r = Math.random().toString(36).substring(6);
-  return r;
-};
-
-//function that checks if emails were already in use
-const getUserByEmail = function(email, users) {
-  for (let user in users) {
-    if (users[user].email === email) {
-      return users[user].id;
-      //returns entire object instread of true value (as per mentor Gary)
-    }
-  }
-};
-
-//check if the password matches the user/email
-const getPasswordCheck = function(email, password, users) {
-  for (let user in users) {
-    if (users[user].email === email && users[user].password === password) {
-      return true;
-    }
-  }
-};
-
-// returns URLs where the userID === id of the currently logged in user
-const urlsForUser = function(id) {
-  let urls = {};
-  for (let shortURL in urlDatabase) {
-    console.log('urls', urlDatabase[shortURL]);
-    if (id === urlDatabase[shortURL].userID) {
-      urls[shortURL] = urlDatabase[shortURL];
-    }
-  }
-  return urls;
-  // sending back urls if the id matches
 };
 
 // main index page of URLs
