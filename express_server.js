@@ -14,16 +14,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // cookie parser setup
 const cookieParser = require("cookie-parser");
+const e = require("express");
 app.use(cookieParser());
 
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
-    userID: "aJ48lW" 
+    userID: "aJ48lW"
   },
   i3BoGr: {
     longURL: "https://www.google.ca",
-    userID: "aJ48lW" }
+    userID: "aJ48lW"
+  }
 };
 
 // Old urlDatabase object:
@@ -71,32 +73,33 @@ const getPasswordCheck = function (email, password, users) {
 };
 
 // returns URLs where the userID === id of the currently logged in user
-const urlsForUser = function(id) {
-    let urls = {};
-    for (let users in urlDatabase) {
-      if ( id === urlDatabase[users].userID) {
-        urls[users] = urlDatabase[users];
-      }
+const urlsForUser = function (id) {
+  let urls = {};
+  for (let users in urlDatabase) {
+    if (id === urlDatabase[users].userID) {
+      urls[users] = urlDatabase[users];
     }
-    return urls;
+  }
+  return urls;
 }
 
 // main index page of URLs
 // add cookies to all templateVars since header shows up on all these pages
 app.get("/urls", (req, res) => {
-
-    const templateVars = {
-      urls: urlDatabase,
-      user: users[req.cookies.user_id]
-    }
-    res.render("urls_index", templateVars);
+// needs to be urls unique for the user
+  const templateVars = {
+    urls: urlDatabase, 
+    user: users[req.cookies.user_id]
+  }
+  res.render("urls_index", templateVars);
 
 });
 
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// });
-
+// const templateVars = {
+//   urlDatabase: urlsForUser(req.cookies.user_id),
+//   user: req.cookies.user_id
+// }
+// res.render("urls_index", templateVars);
 
 // present form to the user
 // templateVars that were missing before!
@@ -118,23 +121,35 @@ app.post("/urls", (req, res) => {
   //console.log(req.body); // Log the POST request body to the console
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
-  res.redirect("/urls/");
+  urlDatabase[shortURL] = {
+    longURL,
+    user: users[req.cookies.user_id]
+  };
+  res.redirect(`/urls/${shortURL}`);
 });
 
-// Edit buttons action
-// Updates URL resource
-app.post("/urls/:shortURL", (req, res) => {
-  const shortURL = req.params.id;
-  const longURL = urlDatabase[shortURL];
 
+app.post("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+  res.redirect(`/urls/${longURL}`)
+});
+
+app.get("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  // console.log("req.params.id", req.params.shortURL);
+  // console.log("req.params", req.params);
+  // console.log("urlDatabase[shortURL]", urlDatabase[shortURL]);
+  const longURL = urlDatabase[shortURL]['longURL'];
   if (users[req.cookies.user_id]) {
-    const templateVars = {
+    let templateVars = {
       shortURL,
       longURL,
       user: users[req.cookies.user_id]
-    }
-    res.redirect(`/urls/${shortURL}`);
+    };
+    res.render("urls_show", templateVars);
+  } else {
+    res.redirect("/login")
   }
 });
 
@@ -164,6 +179,7 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -184,7 +200,6 @@ app.post("/register", (req, res) => {
     };
     users[id] = user;
     res.cookie("user_id", user.id);
-
     res.redirect("/urls");
   }
 });
@@ -218,7 +233,11 @@ app.get("/u/:shortURL", (req, res) => {
 // Update: updates the long address only
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
+  if (users[req.cookies.user_id]) {
+    delete urlDatabase[shortURL];
+  } else {
+    res.status(400).send("Action not allowed!")
+  }
   //redir back to the main page with My URLs
   res.redirect("/urls");
 });

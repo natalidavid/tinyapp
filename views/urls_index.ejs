@@ -12,9 +12,11 @@
 </head>
 
 <body>
+
   <header>
     <%- include('partials/_header') %>
   </header>
+
   <main style="margin: 1em;">
     <h3>My URLs</h3>
     <table class="table">
@@ -31,7 +33,7 @@
         </thead>
 
         <tbody>
-          
+
           <% for(let shortURL in urls) { %>
             <tr>
               <td>
@@ -41,9 +43,9 @@
                 <%= urls[shortURL].longURL %>
               </td>
               <td>
-                <form method="POST" action="/urls/<%= shortURL %>">
-                  <button class="btn btn-dark" type="submit">Edit</button>
-                </form>
+                <!-- <form method="POST" action="/urls/<%= shortURL %>"> -->
+                  <a href="/urls/<%= shortURL %>"><button class="btn btn-dark" type="submit">Edit</button></a>
+                <!-- </form> -->
               </td>
               <td>
                 <form method="POST" action="/urls/<%= shortURL %>/delete">
@@ -53,17 +55,17 @@
 
             </tr>
             <% } %>
-        </tbody>
+          </tbody>
+          <% } else { %>
+  
+            <tr>
+              <td>
+                <p>Please register or login to see the information.</p>
+              </td>
+            </tr>
+  
+            <% } %>
 
-        <% } else { %>
-
-          <tr>
-            <td>
-              <p>Please register or login to see the information.</p>
-            </td>
-          </tr>
-
-          <% } %>
     </table>
   </main>
   <!-- Bootstrap JS -->
