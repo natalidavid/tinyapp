@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-const { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser, urlDatabase} = require("./helper")
+const { generateRandomString, getUserByEmail, getPasswordCheck, urlsForUser, urlDatabase, users} = require("./helper")
 app.set("view engine", "ejs");
 
 // morgan middleware
@@ -18,19 +18,6 @@ app.use(cookieParser());
 
 // password hashing magic
 const bcrypt = require("bcrypt");
-
-const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
-  },
-  "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
-  }
-};
 
 // main index page of URLs
 // add cookies to all templateVars since header shows up on all these pages
@@ -105,12 +92,16 @@ app.post("/login", (req, res) => {
     res.cookie("user_id", mailCheck);
     res.redirect("/urls");
   } else {
-    res.sendStatus(403);
+    const templateVars = {
+      error: "Something's wrong!"
+    };
+    res.status(403).render('404', templateVars);
   }
 });
 
 // POST handle for our logout action
 app.post("/logout", (req, res) => {
+  console.log("reqbodyuser", req.body.user);
   res.clearCookie("user_id");
   //clears the cookie, thus logging user out
   res.redirect("/urls");
@@ -124,9 +115,15 @@ app.post("/register", (req, res) => {
   // check for empty fields and duplicate emails
 
   if (!email || !password) {
-    res.sendStatus(400);
+    const templateVars = {
+      error: "Something's wrong!"
+    };
+    res.status(400).render('404', templateVars);
   } else if (getUserByEmail(email, users)) {
-    res.sendStatus(400);
+    const templateVars = {
+      error: "Something's wrong!"
+    };
+    res.status(400).render('404', templateVars);
   } else {
     const id = generateRandomString();
     // create user object
@@ -172,7 +169,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   if (req.cookies.user_id) {
     delete urlDatabase[shortURL];
   } else {
-    res.status(400).send("Action not allowed!");
+    const templateVars = {
+      error: "Action not allowed!"
+    };
+    res.status(400).render('404', templateVars);
   }
   //redir back to the main page with My URLs
   res.redirect("/urls");
@@ -180,8 +180,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // Displays 404 message
 app.get("*", (req, res) => {
-  res.sendStatus(404);
-  res.redirect("/urls");
+  const templateVars = {
+    error: "404 not found!"
+  };
+  res.render("404", templateVars);
 });
 
 // Displays the message when server is up
