@@ -28,7 +28,7 @@ const users = {
 
 //generate 6 alphanumerical string to use for URL shortening
 const generateRandomString = function() {
-  let r = Math.random().toString(36).substring(6);
+  let r = Math.random().toString(36).substring(7);
   return r;
 };
 

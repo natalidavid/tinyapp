@@ -10,15 +10,12 @@
     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
 </head>
-
 <body>
-
   <header>
     <%- include('partials/_header') %>
   </header>
 
   <main style="margin: 1em;">
-
 
     <% if (user) { %>
       <h3>My URLs</h3>
@@ -57,14 +54,10 @@
       <div style="padding-top: 3em">
       <a class="btn btn-grey" href="/urls/new" style="color: #2E2F35">Create a New Short Link</a>
     </div>
+
       <% } else { %>
-
-
         <p>Please register or login to see the information.</p>
-
-
         <% } %>
-
 
   </main>
   <!-- Bootstrap JS -->
