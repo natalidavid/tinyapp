@@ -7,22 +7,28 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
-    <title>Login</title>
+    <title>403 Error</title>
   </head>
 
   <body>
-    <header>
-      <%- include('partials/_header') %>
-    </header>
-    <main style="margin: 1em;">
 
-      <!-- Registration Form (downloaded simple form form the bootstrap website)-->
-      <h3>Login</h3>
-      <form action="/login" method="POST">
-        <input type="email" name="email" placeholder="name"> </br></br>
-        <input type="password" name="password" placeholder="password"> </br></br>
-        <button type="submit" class="btn btn-secondary">Login</button>
-      </form>
+      <!-- 400 Error (downloaded the bootstrap template)-->
+      <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="error-template" style="padding-top: 10em">
+                    <h1>
+                        Oops!</h1>
+                    <h2>
+                        403 Access Forbidden</h2>
+                        <p>You do not have permission to access this page</p>
+                    <div class="error-details">
+                    </div>
+                    <a class="btn btn-secondary" href="/urls" style="margin-right: 1em; margin-top: 1em">Let's go back</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
       <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
