@@ -2,18 +2,20 @@
 
 A full stack web app built with `Node` and `Express` that allows users to shorten long URLs (à la bit.ly).
 
-![](https://i.ibb.co/pdmGk0d/Opera-Snapshot-2021-01-22-231707-localhost.png)
-![](https://i.ibb.co/m9JNTbZ/Opera-Snapshot-2021-01-22-231722-localhost.png)
-![](https://i.ibb.co/JKTRqM6/Opera-Snapshot-2021-01-22-231734-localhost.png)
+## Final Product
+
+![URLs page](https://github.com/natalidavid/tinyapp/blob/master/docs/tinyapp_index_page.png?raw=true)
+![Short URL Creation](https://github.com/natalidavid/tinyapp/blob/master/docs/tinyapp_new_url.png?raw=true)
+![Short URL Page](https://github.com/natalidavid/tinyapp/blob/master/docs/tinyapp_short_url.png?raw=true)
 
 ## Dependencies
 * Node.js
+* EJS
+* Express
 * bcrypt | bcryptjs
 * body-parser
 * cookie-session
-* ejs
-* express
-* morgan
+* Morgan
 
 ## Getting Started
 
