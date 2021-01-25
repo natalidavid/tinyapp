@@ -17,7 +17,6 @@ app.use(cookieSession({
   keys: ["key1", "key2"]
 }));
 
-
 // main index page of URLs
 app.get("/urls", (req, res) => {
   const templateVars = {
@@ -73,7 +72,6 @@ app.post("/urls", (req, res) => {
   };
   res.redirect(`/urls/${shortURL}`);
 });
-
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
