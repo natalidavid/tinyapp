@@ -33,16 +33,23 @@ app.get("/urls/new", (req, res) => {
       urls: urlDatabase,
       user: users[req.session.user_id]
     };
-    res.render("urls_new", templateVars);
+    return res.render("urls_new", templateVars);
   } else {
-    res.redirect("/login");
+    return res.redirect("/login");
   }
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL].longURL;
+  res.redirect(longURL);
+  //redirects to original URL, eg lighthouselabs.ca
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL].longURL;
-  if (req.session.user_id === urlDatabase[shortURL].userID) {
+  // if the url exists && cookie + logged in information match
+  if (urlDatabase[shortURL] && req.session.user_id === urlDatabase[shortURL].userID) {
+    const longURL = urlDatabase[shortURL].longURL;
     let templateVars = {
       shortURL: shortURL,
       longURL: longURL,
@@ -51,18 +58,11 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.render("urls_show", templateVars);
   } else {
     const templateVars = {
-      error: "403 Access Forbidden"
+      error: "404 Not Found"
     };
-    return res.render("403", templateVars);
+    return res.render("404", templateVars);
   }
 });
-
-// This will take us to the full webiste
-app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
-});
-
 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
@@ -71,7 +71,7 @@ app.post("/urls", (req, res) => {
     longURL: longURL,
     userID: req.session.user_id
   };
-  res.redirect(`/urls/`);
+  res.redirect(`/urls/${shortURL}`);
 });
 
 
@@ -79,13 +79,11 @@ app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   urlDatabase[shortURL].longURL = req.body.longURL;
   if (req.session.user_id === urlDatabase[shortURL].userID) {
-    //get longURL value from the object
-    res.redirect("/urls");
+    return res.redirect("/urls");
   } else {
     return res.redirect("/login");
   }
 });
-
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
@@ -128,12 +126,12 @@ app.post("/login", (req, res) => {
   // check if the password matches
   if (passCheck && mailCheck) {
     req.session.user_id = mailCheck;
-    res.redirect("/urls");
+    return res.redirect("/urls");
   } else {
     const templateVars = {
       error: "Something's wrong!"
     };
-    res.status(400).render("400", templateVars);
+    return res.status(400).render("400", templateVars);
   }
 });
 
@@ -146,12 +144,12 @@ app.post("/register", (req, res) => {
     const templateVars = {
       error: "Something's wrong!"
     };
-    res.status(400).render("400", templateVars);
+    return res.status(400).render("400", templateVars);
   } else if (getUserByEmail(email, users)) {
     const templateVars = {
       error: "Something's wrong!"
     };
-    res.status(400).render("400", templateVars);
+    return res.status(400).render("400", templateVars);
   } else {
     const id = generateRandomString();
     // create user object
@@ -163,7 +161,7 @@ app.post("/register", (req, res) => {
     };
     users[id] = user;
     req.session.user_id = user.id;
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
 });
 
@@ -173,11 +171,13 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+// Fux error: if used logged in -> /urls : /login
 app.get("*", (req, res) => {
-  const templateVars = {
-    error: "404 not found!"
-  };
-  res.render("404", templateVars);
+  if (req.session.user_id) {
+    return res.redirect("/urls")
+  } else {
+    return res.redirect("/login");
+  }
 });
 
 app.listen(PORT, () => {
